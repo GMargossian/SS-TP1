@@ -1,16 +1,18 @@
 package ar.edu.itba.ss;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 public class Cell {
-    private List<Particle> particles;
+    private Set<Particle> particles;
+
 
     Cell(){
-        this.particles = new ArrayList<>();
+        this.particles = new HashSet<>();
     }
 
-    List<Particle> getParticles(){
+    Set<Particle> getParticles(){
         return particles;
     }
 
