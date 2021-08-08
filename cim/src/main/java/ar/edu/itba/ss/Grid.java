@@ -150,7 +150,11 @@ public class Grid {
 
     public void dropDataToJSONFile(String jsonpath){
         Gson gson = new GsonBuilder().registerTypeAdapter(Particle.class, new ParticleSerializer()).create();
-        StringBuilder sb = new StringBuilder("{ \"particles\": [\n");
+        StringBuilder sb = new StringBuilder("{");
+        sb.append("\"L\":").append(this.L).append(",\n");
+        sb.append("\"M\":").append(this.M).append(",\n");
+        sb.append("\"RC\":").append(this.RC).append(",\n");
+        sb.append("\"particles\": [\n");
 
         for (int i = 0; i < this.M; i++) {
             for (int j = 0; j < this.M; j++) {

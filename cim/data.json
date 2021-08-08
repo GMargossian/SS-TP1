@@ -1,4 +1,7 @@
-{ "particles": [
+{"L":12,
+"M":4,
+"RC":3,
+"particles": [
 {"id":1,"posX":1.5,"posY":1.5,"radius":0.4,"neighbours":[2,4,6,8,7]},
 {"id":2,"posX":3.2,"posY":2.2,"radius":0.6,"neighbours":[4,6,1,3,7]},
 {"id":3,"posX":5.9,"posY":1.5,"radius":0.2,"neighbours":[2,7]},
