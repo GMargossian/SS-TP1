@@ -120,7 +120,7 @@ public class Grid {
 
         // Cell --> {0,-L}
 
-        System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+
 
         Map<Cell, int[]> cells = new HashMap<>();
 

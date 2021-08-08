@@ -40,7 +40,7 @@ public class ParticleSimulator {
                     if(particleId == N){
                         grid.completeGrid(this.particles);
                         grid.updateNeighbours();
-                        grid.printGrid();
+                       // grid.printGrid();
                         grid.clearGrid();
 
                     }
