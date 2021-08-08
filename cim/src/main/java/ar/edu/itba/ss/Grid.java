@@ -1,7 +1,10 @@
 package ar.edu.itba.ss;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.*;
 
 
@@ -11,7 +14,6 @@ public class Grid {
     final private int M;
     final private int RC;
     final private double cellLong;
-    final private long N;
     private Cell[][] grid;
     private final List<int[]> directions = new ArrayList<>(){
         {
@@ -23,11 +25,10 @@ public class Grid {
         }
     };
 
-    Grid(int L, int M,int RC,long N){
+    Grid(int L, int M,int RC){
         this.L = L;
         this.M = M;
         this.RC = RC;
-        this.N = N;
         this.cellLong = (double)L / M; // Tiene que ser entero?
         this.grid = new Cell[M][M];
         for(int i = 0; i < M; i++){
@@ -37,7 +38,7 @@ public class Grid {
         }
     }
 
-    public void completeGrid(Set<Particle> particles){
+    public void completeGrid(List<Particle> particles){
         for(Particle particle : particles){
             int gridI =(int) (Math.floor(particle.getPosY()/cellLong));
             int gridJ = (int) (Math.floor(particle.getPosX()/cellLong));
@@ -50,6 +51,14 @@ public class Grid {
         }
 
         //particles.forEach(p -> grid[(int) (Math.floor(p.posX/M)-1)][(int) (Math.floor(p.posY/M)-1)].getParticles().add(p));
+    }
+
+    public void clearGrid(){
+        for(int i = 0; i < M; i++){
+            for(int j = 0; j < M; j++){
+                grid[i][j].getParticles().clear();
+            }
+        }
     }
 
     public void updateNeighbours(){
@@ -111,7 +120,7 @@ public class Grid {
 
         // Cell --> {0,-L}
 
-        System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+
 
         Map<Cell, int[]> cells = new HashMap<>();
 
@@ -146,9 +155,32 @@ public class Grid {
 
 
     public void dropDataToJSONFile(String jsonpath){
-//        System.out.println(JSON.stringify()this);
-        Gson gson = new Gson();
-        System.out.println(gson.toJson(this));
+        Gson gson = new GsonBuilder().registerTypeAdapter(Particle.class, new ParticleSerializer()).create();
+        StringBuilder sb = new StringBuilder("{");
+        sb.append("\"L\":").append(this.L).append(",\n");
+        sb.append("\"M\":").append(this.M).append(",\n");
+        sb.append("\"RC\":").append(this.RC).append(",\n");
+        sb.append("\"particles\": [\n");
+
+        for (int i = 0; i < this.M; i++) {
+            for (int j = 0; j < this.M; j++) {
+                for(Particle p : this.grid[i][j].getParticles()){
+                    sb.append(gson.toJson(p));
+                    sb.append(",\n");
+                }
+            }
+        }
+        sb.deleteCharAt(sb.length()-2);
+        sb.append("]}");
+
+        try {
+            FileWriter fw = new FileWriter(jsonpath);
+            fw.write(sb.toString());
+            fw.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
 
     }
 
