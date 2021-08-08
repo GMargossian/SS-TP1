@@ -1,7 +1,10 @@
 package ar.edu.itba.ss;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.*;
 
 
@@ -152,9 +155,28 @@ public class Grid {
 
 
     public void dropDataToJSONFile(String jsonpath){
-//        System.out.println(JSON.stringify()this);
-        Gson gson = new Gson();
-        System.out.println(gson.toJson(this));
+        Gson gson = new GsonBuilder().registerTypeAdapter(Particle.class, new ParticleSerializer()).create();
+        StringBuilder sb = new StringBuilder("{ \"particles\": [\n");
+
+        for (int i = 0; i < this.M; i++) {
+            for (int j = 0; j < this.M; j++) {
+                for(Particle p : this.grid[i][j].getParticles()){
+                    sb.append(gson.toJson(p));
+                    sb.append(",\n");
+                }
+            }
+        }
+        sb.deleteCharAt(sb.length()-2);
+        sb.append("]}");
+
+        try {
+            FileWriter fw = new FileWriter(jsonpath);
+            fw.write(sb.toString());
+            fw.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
 
     }
 
