@@ -1,5 +1,5 @@
 var particle_list = [];
-
+var RC;
 
 class Particle{
     constructor(id,x,y,radius,neighbours,color){
@@ -65,6 +65,7 @@ function onReaderLoad(event){
     scale = 70;
     canvas.width = data['L'] * scale;
     canvas.height = data['L'] * scale;
+    RC = data['RC'] * scale;
     particle_list = [];
     data['particles'].forEach((particle) =>{
         console.log(particle)
@@ -127,7 +128,7 @@ canvas.addEventListener('click', (event) =>{
             neighbours.forEach(n=> n.color = "pink");
             context.clearRect(0, 0, canvas.width, canvas.height);
             context.beginPath();
-            context.arc( clicked.x, clicked.y, clicked.radius + 200, 0, Math.PI * 2, false); //TODO: Cambiar al RC
+            context.arc( clicked.x, clicked.y, clicked.radius + RC, 0, Math.PI * 2, false); //TODO: Cambiar al RC
             context.stroke();
             context.closePath();
             drawWindowBorders();

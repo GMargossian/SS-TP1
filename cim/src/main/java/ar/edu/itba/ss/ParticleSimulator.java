@@ -41,6 +41,7 @@ public class ParticleSimulator {
                         grid.completeGrid(this.particles);
                         grid.updateNeighbours();
                        // grid.printGrid();
+                        grid.dropDataToJSONFile("data.json");
                         grid.clearGrid();
 
                     }
