@@ -14,6 +14,7 @@ public class Grid {
     final private int M;
     final private int RC;
     final private double cellLong;
+    final private Boolean hasWalls;
     private Cell[][] grid;
     private final List<int[]> directions = new ArrayList<>(){
         {
@@ -25,10 +26,11 @@ public class Grid {
         }
     };
 
-    Grid(int L, int M,int RC){
+    Grid(int L, int M,int RC,Boolean hasWalls){
         this.L = L;
         this.M = M;
         this.RC = RC;
+        this.hasWalls = hasWalls;
         this.cellLong = (double)L / M; // Tiene que ser entero?
         this.grid = new Cell[M][M];
         for(int i = 0; i < M; i++){
@@ -117,18 +119,19 @@ public class Grid {
     }
 
     public Map<Cell,int[]> getCellNeighbours(int i, int j){
-
         // Cell --> {0,-L}
-
-
 
         Map<Cell, int[]> cells = new HashMap<>();
 
         for (int[] dir : directions){
-
             int overflowX = 0;
             int overflowY = 0;
             int dj = j+dir[1];
+            int di = i+dir[0];
+
+            if(this.hasWalls && ((dj < 0 || dj >= this.M) || (di < 0 || di >= this.M))) {
+                continue;
+            }
 
             if(dj < 0){
                 overflowX = -this.L; // No pasa en nuestro caso
@@ -136,7 +139,7 @@ public class Grid {
                 overflowX = this.L;
             }
 
-            int di = i+dir[0];
+
             if(di < 0){
                 overflowY = -this.L;
             }else if(di >= this.M){
@@ -160,6 +163,7 @@ public class Grid {
         sb.append("\"L\":").append(this.L).append(",\n");
         sb.append("\"M\":").append(this.M).append(",\n");
         sb.append("\"RC\":").append(this.RC).append(",\n");
+        sb.append("\"hasWalls\":").append(this.hasWalls).append(",\n");
         sb.append("\"particles\": [\n");
 
         for (int i = 0; i < this.M; i++) {

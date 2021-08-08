@@ -60,6 +60,7 @@ public class ParticleSimulator {
         Integer N = null;
         Integer RC = null;
         Scanner sc = null;
+        Boolean hasWalls = null;
         // pass the path to the file as a parameter
         URL resource = Main.class.getClassLoader().getResource(staticDataPath);
         if (resource == null) {
@@ -76,7 +77,7 @@ public class ParticleSimulator {
                 }
                 if(sc != null){
                     int line = 0;
-                    while (line <4 && sc.hasNextLine()){
+                    while (line <5 && sc.hasNextLine()){
 
                         switch(line){
                             case 0:
@@ -91,6 +92,9 @@ public class ParticleSimulator {
                             case 3:
                                 RC = sc.nextInt();
                                 break;
+                            case 4:
+                                hasWalls = sc.nextInt() == 1 ? Boolean.TRUE : Boolean.FALSE;
+                                break;
                         }
                         line++;
 
@@ -100,11 +104,11 @@ public class ParticleSimulator {
                 e.printStackTrace();
             }
         }
-        if(L == null || M == null || RC == null || N == null){
+        if(L == null || M == null || RC == null || N == null || hasWalls == null){
             throw new IllegalArgumentException("Invalid particle static values");
         }
-        System.out.println("L = "+L+" M = "+M+" RC = "+RC+" N= "+N);
-        this.grid = new Grid(L,M,RC);
+        System.out.println("L = "+L+" M = "+M+" RC = "+RC+" N= "+N + " hasWalls= " + hasWalls);
+        this.grid = new Grid(L,M,RC,hasWalls);
         initParticles(sc);
     }
 
