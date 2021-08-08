@@ -4,10 +4,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class Particle {
+public class Particle{
 
-    private int id;
+    private final int id;
     private double posX, posY;
+    private double velX, velY;
     private Set<Particle> neighbours;
     private double radius;
 
@@ -19,12 +20,30 @@ public class Particle {
         this.neighbours = new HashSet<>();
     }
 
+    public Particle(int id,double radius){
+        this.id = id;
+        this.radius = radius;
+        this.neighbours = new HashSet<>();
+    }
+
     public int getId() {
         return id;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public double getVelX() {
+        return velX;
+    }
+
+    public void setVelX(double velX) {
+        this.velX = velX;
+    }
+
+    public double getVelY() {
+        return velY;
+    }
+
+    public void setVelY(double velY) {
+        this.velY = velY;
     }
 
     public double getPosX() {
@@ -69,7 +88,7 @@ public class Particle {
                 "posX=" + posX +
                 ", posY=" + posY+", neighbours= [");
         for(Particle particle: neighbours){
-            sb.append("Particle"+ particle.id + "{ posX= ").append(particle.getPosX()).append(", posY= ").append(particle.posY).append("}, ");
+            sb.append("Particle").append(particle.id).append("{ posX= ").append(particle.getPosX()).append(", posY= ").append(particle.posY).append("}, ");
         }
         return sb.append("]}").toString();
     }
@@ -92,7 +111,9 @@ public class Particle {
         Particle other = (Particle) o;
 
         // Compare the data members and return accordingly
-        return this.posX == other.getPosX() && this.posY == other.getPosY() && this.radius  == other.getRadius();
+        return this.id == other.id;
     }
+
+
 }
 
