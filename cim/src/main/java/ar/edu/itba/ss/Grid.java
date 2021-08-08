@@ -11,7 +11,6 @@ public class Grid {
     final private int M;
     final private int RC;
     final private double cellLong;
-    final private long N;
     private Cell[][] grid;
     private final List<int[]> directions = new ArrayList<>(){
         {
@@ -23,11 +22,10 @@ public class Grid {
         }
     };
 
-    Grid(int L, int M,int RC,long N){
+    Grid(int L, int M,int RC){
         this.L = L;
         this.M = M;
         this.RC = RC;
-        this.N = N;
         this.cellLong = (double)L / M; // Tiene que ser entero?
         this.grid = new Cell[M][M];
         for(int i = 0; i < M; i++){
@@ -37,7 +35,7 @@ public class Grid {
         }
     }
 
-    public void completeGrid(Set<Particle> particles){
+    public void completeGrid(List<Particle> particles){
         for(Particle particle : particles){
             int gridI =(int) (Math.floor(particle.getPosY()/cellLong));
             int gridJ = (int) (Math.floor(particle.getPosX()/cellLong));
@@ -50,6 +48,14 @@ public class Grid {
         }
 
         //particles.forEach(p -> grid[(int) (Math.floor(p.posX/M)-1)][(int) (Math.floor(p.posY/M)-1)].getParticles().add(p));
+    }
+
+    public void clearGrid(){
+        for(int i = 0; i < M; i++){
+            for(int j = 0; j < M; j++){
+                grid[i][j].getParticles().clear();
+            }
+        }
     }
 
     public void updateNeighbours(){
