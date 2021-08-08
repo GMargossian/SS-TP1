@@ -161,12 +161,10 @@ public class Grid {
             }
         }
         sb.deleteCharAt(sb.length()-2);
-
         sb.append("]}");
-        System.out.println("##################################################################");
-        System.out.println(sb.toString());
+
         try {
-            FileWriter fw = new FileWriter("data.json");
+            FileWriter fw = new FileWriter(jsonpath);
             fw.write(sb.toString());
             fw.close();
         } catch (IOException e) {
