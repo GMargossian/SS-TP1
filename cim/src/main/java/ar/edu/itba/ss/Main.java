@@ -71,7 +71,7 @@ public class Main {
         grid.updateNeighbours();
         grid.printGrid();
 
-//        grid.dropDataToJSONFile("data.json");
+        grid.dropDataToJSONFile("data.json");
 
     }
 

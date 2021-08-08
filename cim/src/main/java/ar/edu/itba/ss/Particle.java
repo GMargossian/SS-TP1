@@ -19,6 +19,13 @@ public class Particle {
         this.neighbours = new HashSet<>();
     }
 
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 
     public double getPosX() {
         return posX;
