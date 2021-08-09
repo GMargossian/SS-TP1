@@ -12,10 +12,10 @@ public class Grid {
 
     final private int L;
     final private int M;
-    final private int RC;
+    final private double RC;
     final private double cellLong;
-    final private Boolean hasWalls;
-    private Cell[][] grid;
+    final private boolean hasWalls;
+    private final Cell[][] grid;
     private final List<int[]> directions = new ArrayList<>(){
         {
             add(new int[]{0, 0});
@@ -26,7 +26,7 @@ public class Grid {
         }
     };
 
-    Grid(int L, int M,int RC,Boolean hasWalls){
+    Grid(int L, int M,double RC,boolean hasWalls){
         this.L = L;
         this.M = M;
         this.RC = RC;
@@ -56,6 +56,11 @@ public class Grid {
     }
 
     public void clearGrid(){
+//        Arrays.stream(grid).parallel().forEach(cells -> {
+//            for(int i = 0 ; i< M;i++){
+//                cells[i].getParticles().clear();
+//            }
+//        });
         for(int i = 0; i < M; i++){
             for(int j = 0; j < M; j++){
                 grid[i][j].getParticles().clear();
@@ -69,15 +74,11 @@ public class Grid {
                 Cell curr = this.grid[i][j];
                 if(curr.hasParticles()){
                     Map<Cell,int[]> neighbourCells = getCellNeighbours(i,j);
-                    Set<Particle> particles = curr.getParticles();
-                    for(Particle particle: particles){
-                        addNeighbours(particle,neighbourCells);
-                    }
+                    //Testing parallel stream
+                    curr.getParticles().parallelStream().forEach(particle-> addNeighbours(particle,neighbourCells));
                 }
             }
         }
-
-
     }
 
     public void printGrid(){
@@ -98,23 +99,22 @@ public class Grid {
 
     private boolean isNeighbour(Particle p1, Particle p2, int[] overflow){
         double dist = Math.sqrt(Math.pow((p1.getPosX() - (p2.getPosX() + overflow[0])),2) + Math.pow((p1.getPosY() - (p2.getPosY() + overflow[1])),2)) - p1.getRadius() - p2.getRadius();
-//        System.out.println("Distance between:" + p1 + " and " + p2 + " is: " + dist);
         return dist <= this.RC;
     }
 
     private void addNeighbours(Particle particle,Map<Cell,int[]> neighbourCells){
         for(Map.Entry<Cell,int[]> cell: neighbourCells.entrySet()){
-            Set<Particle> maybeNeighbours = cell.getKey().getParticles();
-
             int[] overflow = cell.getValue();
-            for(Particle neighbour: maybeNeighbours){
-                if(!neighbour.equals(particle)){
-                    if(isNeighbour(particle,neighbour,overflow)){
-                        particle.getNeighbours().add(neighbour);
-                        neighbour.getNeighbours().add(particle);
-                    }
-                }
-            }
+            //Testing parallel stream
+           cell.getKey().getParticles().parallelStream().forEach(neighbour-> {
+                   if(!neighbour.equals(particle)){
+                       if(isNeighbour(particle,neighbour,overflow)){
+                           particle.getNeighbours().add(neighbour);
+                           neighbour.getNeighbours().add(particle);
+                       }
+                   }
+               });
+
         }
     }
 

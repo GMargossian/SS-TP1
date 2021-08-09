@@ -56,11 +56,10 @@ public class ParticleSimulator {
 
     public void initStaticData(String staticDataPath){
         Integer L = null;
-        Integer M = null;
         Integer N = null;
-        Integer RC = null;
-        Scanner sc = null;
+        Double RC = null;
         Boolean hasWalls = null;
+        Scanner sc = null;
         // pass the path to the file as a parameter
         URL resource = Main.class.getClassLoader().getResource(staticDataPath);
         if (resource == null) {
@@ -77,7 +76,7 @@ public class ParticleSimulator {
                 }
                 if(sc != null){
                     int line = 0;
-                    while (line <5 && sc.hasNextLine()){
+                    while (line <4 && sc.hasNextLine()){
 
                         switch(line){
                             case 0:
@@ -87,12 +86,9 @@ public class ParticleSimulator {
                                 L = sc.nextInt();
                                 break;
                             case 2:
-                                M = sc.nextInt();
+                                RC = sc.nextDouble();
                                 break;
                             case 3:
-                                RC = sc.nextInt();
-                                break;
-                            case 4:
                                 hasWalls = sc.nextInt() == 1 ? Boolean.TRUE : Boolean.FALSE;
                                 break;
                         }
@@ -104,12 +100,16 @@ public class ParticleSimulator {
                 e.printStackTrace();
             }
         }
-        if(L == null || M == null || RC == null || N == null || hasWalls == null){
+        if(L == null || RC == null || N == null || hasWalls == null){
             throw new IllegalArgumentException("Invalid particle static values");
         }
+
+        double maxRadius = initParticles(sc);
+        int M = (int) Math.floor((L/(RC + 2*maxRadius)));
+
         System.out.println("L = "+L+" M = "+M+" RC = "+RC+" N= "+N + " hasWalls= " + hasWalls);
         this.grid = new Grid(L,M,RC,hasWalls);
-        initParticles(sc);
+
     }
 
     public void initDynamicData(String dynamicDataPath){
@@ -134,14 +134,18 @@ public class ParticleSimulator {
         }
     }
 
-    public void initParticles(Scanner sc){
+    public double initParticles(Scanner sc){
 
         // pass the path to the file as a parameter
+        double maxRadius = 0;
         if(sc != null) {
             int line = 0;
             while (sc.hasNextDouble()) {
-
-                particles.add(new Particle(line++,sc.nextDouble()));
+                double radius = sc.nextDouble();
+                if(maxRadius < radius){
+                    maxRadius = radius;
+                }
+                particles.add(new Particle(line++,radius));
 
             }
             System.out.println("Loaded "+line+" particles.");
@@ -149,5 +153,9 @@ public class ParticleSimulator {
         }else{
             throw new IllegalArgumentException("Scanner can't be null");
         }
+
+        return maxRadius;
     }
+
+
 }

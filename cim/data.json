@@ -1,14 +1,14 @@
 {"L":12,
-"M":4,
-"RC":3,
+"M":2,
+"RC":3.0,
 "hasWalls":false,
 "particles": [
-{"id":0,"posX":1.5,"posY":1.5,"radius":0.4,"neighbours":[6,7,1,5,3]},
-{"id":1,"posX":3.2,"posY":2.2,"radius":0.6,"neighbours":[6,0,2,5,3]},
-{"id":2,"posX":5.9,"posY":1.5,"radius":0.2,"neighbours":[6,1]},
-{"id":5,"posX":2.7,"posY":11.7,"radius":0.3,"neighbours":[6,7,1,0,3]},
-{"id":3,"posX":2.0,"posY":11.7,"radius":0.3,"neighbours":[6,7,1,0,5]},
-{"id":6,"posX":4.0,"posY":11.6,"radius":0.1,"neighbours":[1,0,2,5,3]},
+{"id":1,"posX":3.2,"posY":2.2,"radius":0.6,"neighbours":[3,2,6,0,5]},
+{"id":2,"posX":5.9,"posY":1.5,"radius":0.2,"neighbours":[1,6]},
+{"id":0,"posX":1.5,"posY":1.5,"radius":0.4,"neighbours":[1,3,6,5,7]},
+{"id":3,"posX":2.0,"posY":11.7,"radius":0.3,"neighbours":[1,6,0,5,7]},
+{"id":6,"posX":4.0,"posY":11.6,"radius":0.1,"neighbours":[1,3,2,0,5]},
+{"id":5,"posX":2.7,"posY":11.7,"radius":0.3,"neighbours":[1,3,6,0,7]},
 {"id":4,"posX":7.9,"posY":9.0,"radius":0.1,"neighbours":[]},
-{"id":7,"posX":11.9,"posY":11.9,"radius":0.4,"neighbours":[0,5,3]}
+{"id":7,"posX":11.9,"posY":11.9,"radius":0.4,"neighbours":[3,0,5]}
 ]}
