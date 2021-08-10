@@ -92,12 +92,12 @@ public class Grid {
         }
     }
 
-    private boolean isNeighbour(Particle p1, Particle p2, int[] overflow){
+    private boolean isNeighbour(Particle p1, Particle p2, int[] overflow,double RC){
         double dist = Math.sqrt(Math.pow((p1.getPosX() - (p2.getPosX() + overflow[0])),2) + Math.pow((p1.getPosY() - (p2.getPosY() + overflow[1])),2)) - p1.getRadius() - p2.getRadius();
-        return dist <= this.RC;
+        return dist <= RC;
     }
 
-    private void addNeighbours(Particle particle,Set<Particle> currentCellParticles,Map<Cell,int[]> neighbourCells){
+    private void addNeighbours(Particle particle,Set<Particle> currentCellParticles,Map<Cell,int[]> neighbourCells,double RC){
 
 
         Set<Particle> auxSet = new HashSet<>(currentCellParticles);
@@ -106,24 +106,23 @@ public class Grid {
 
         while(currentCellIterator.hasNext()){
             Particle neighbour = currentCellIterator.next();
-            if(isNeighbour(particle,neighbour,new int[]{0,0})){
-                particle.getNeighbours().add(neighbour);
-                neighbour.getNeighbours().add(particle);
-            }
+            addNeighbour(particle,neighbour,new int[]{0,0},RC);
             currentCellIterator.remove();;
         }
 
         for(Map.Entry<Cell,int[]> cell: neighbourCells.entrySet()){
             int[] overflow = cell.getValue();
             //Testing parallel stream
-            cell.getKey().getParticles().parallelStream().forEach(neighbour-> {
-                       if(isNeighbour(particle,neighbour,overflow)){
-                           particle.getNeighbours().add(neighbour);
-                           neighbour.getNeighbours().add(particle);
-                       }
+            cell.getKey().getParticles().parallelStream().forEach(neighbour-> {addNeighbour(particle,neighbour,overflow,this.RC);});
 
-               });
+        }
+    }
 
+
+    private void addNeighbour(Particle particle, Particle neighbour,int[] overflow,double RC){
+        if(isNeighbour(particle,neighbour,overflow,RC)){
+            particle.getNeighbours().add(neighbour);
+            neighbour.getNeighbours().add(particle);
         }
     }
 
