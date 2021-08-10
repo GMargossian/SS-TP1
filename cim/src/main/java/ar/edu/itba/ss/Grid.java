@@ -70,7 +70,7 @@ public class Grid {
                 if(curr.hasParticles()){
                     Map<Cell,int[]> neighbourCells = getCellNeighbours(i,j);
                     //Testing parallel stream
-                    curr.getParticles().parallelStream().forEach(particle-> addNeighbours(particle,curr.getParticles(),neighbourCells));
+                    curr.getParticles().parallelStream().forEach(particle-> addNeighbours(particle,curr.getParticles(),neighbourCells,this.RC));
                 }
             }
         }
