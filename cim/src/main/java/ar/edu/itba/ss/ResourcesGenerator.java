@@ -7,7 +7,7 @@ import java.util.*;
 
 public class ResourcesGenerator {
 
-    private static final int MAX_ITER = 1000;
+    private static final int MAX_ITER = 50000;
 
     public static void main(String[] args) {
         final List<int[]> directions = new ArrayList<>(){
@@ -25,11 +25,11 @@ public class ResourcesGenerator {
 
             }
         };
-        int N = 100;
-        int L = 12;
+        int N = 800;
+        int L = 20;
 
         int RC = 0;
-        boolean hasWalls = false;
+        boolean hasWalls = true;
         Random r = new Random();
         double radiusLimit = 0.7;
         double minRadius = 0.1;
@@ -47,6 +47,7 @@ public class ResourcesGenerator {
             iter++;
             double posx,posy;
             double radius = r.nextDouble()*radiusLimit + minRadius;
+//            double radius = 0.25;
             posx = L * r.nextDouble();
             posy = L * r.nextDouble();
 
@@ -73,7 +74,8 @@ public class ResourcesGenerator {
                 static_data_sb.append(radius).append("\n");
             }
         }
-        String header = i + "\n" + L + "\n" + 1.5 + "\n" + (hasWalls ? "1" : "0") + "\n";
+        //TODO: change hardcoded RC
+        String header = i + "\n" + L + "\n" + 1 + "\n" + (hasWalls ? "1" : "0") + "\n";
         static_data_sb.insert(0,header);
         dynamic_data_sb.append("t1\n");
         grid.printGrid();

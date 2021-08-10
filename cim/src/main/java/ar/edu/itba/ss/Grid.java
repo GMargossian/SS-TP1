@@ -16,6 +16,8 @@ public class Grid {
     final private double cellLong;
     final private boolean hasWalls;
     private final Cell[][] grid;
+//    private List<Particle> particleList;
+
     private final List<int[]> directions = new ArrayList<>(){
         {
             //add(new int[]{0, 0});
@@ -41,6 +43,7 @@ public class Grid {
     }
 
     public void completeGrid(List<Particle> particles){
+//        this.particleList = particles;
         particles.stream().parallel().forEach(particle ->{
             int gridI =(int) (Math.floor(particle.getPosY()/cellLong));
             int gridJ = (int) (Math.floor(particle.getPosX()/cellLong));
@@ -56,11 +59,6 @@ public class Grid {
 
 
     public void clearGrid(){
-//        Arrays.stream(grid).parallel().forEach(cells -> {
-//            for(int i = 0 ; i< M;i++){
-//                cells[i].getParticles().clear();
-//            }
-//        });
         for(int i = 0; i < M; i++){
             for(int j = 0; j < M; j++){
                 grid[i][j].getParticles().clear();
@@ -69,6 +67,21 @@ public class Grid {
     }
 
     public void updateNeighbours(){
+//        particleList.forEach(p ->{
+//            int gridI =(int) (Math.floor(p.getPosY()/cellLong));
+//            int gridJ = (int) (Math.floor(p.getPosX()/cellLong));
+//            Cell curr = this.grid[gridI][gridJ];
+//            Map<Cell,List<int[]>> neighbourCells = getCellNeighbours(this.directions,gridI,gridJ);
+////            curr.getParticles().forEach(particle-> addNeighbours(particle,curr.getParticles(),neighbourCells,this.RC));
+//            addNeighbours(p,curr.getParticles(),neighbourCells,this.RC);
+////            Set<Particle> auxSet = new HashSet<>(curr.getParticles());
+////            for(Particle particle: curr.getParticles()){
+////                auxSet.remove(particle);
+////
+////                addNeighbours(particle,auxSet,neighbourCells,this.RC);
+////            }
+//
+//        });
         for(int i = 0; i < M; i++){
             for(int j = 0; j < M; j++){
                 Cell curr = this.grid[i][j];
@@ -76,13 +89,33 @@ public class Grid {
                     Map<Cell,List<int[]>> neighbourCells = getCellNeighbours(this.directions,i,j);
                     //Testing parallel stream
                     Set<Particle> auxSet = new HashSet<>(curr.getParticles());
-                    System.out.println("AUX SET: "+auxSet);
                     for(Particle particle: curr.getParticles()){
                         auxSet.remove(particle);
 
                         addNeighbours(particle,auxSet,neighbourCells,this.RC);
                     }
 
+                    // curr.getParticles().parallelStream().forEach(particle-> addNeighbours(particle,curr.getParticles(),neighbourCells,this.RC));
+//                    curr.getParticles().parallelStream().forEach(this::bruteForceNeighbours);
+                }
+            }
+        }
+    }
+
+    public void bruteForceNeighbours(Particle p){
+        for(int i = 0; i < M; i++) {
+            for (int j = 0; j < M; j++) {
+                Cell curr = this.grid[i][j];
+                if (curr.hasParticles()) {
+                    for(Particle cell_particle : curr.getParticles()){
+                        if(!cell_particle.equals(p)){
+                            double dist = Math.sqrt(Math.pow((cell_particle.getPosX() - (p.getPosX())),2) + Math.pow((cell_particle.getPosY() - (p.getPosY())),2)) - cell_particle.getRadius() - p.getRadius();
+                            if(dist <= RC){
+                                p.getNeighbours().add(cell_particle);
+                                cell_particle.getNeighbours().add(p);
+                            }
+                        }
+                    }
                 }
             }
         }
