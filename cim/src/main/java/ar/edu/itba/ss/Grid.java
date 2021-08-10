@@ -75,7 +75,14 @@ public class Grid {
                 if(curr.hasParticles()){
                     Map<Cell,List<int[]>> neighbourCells = getCellNeighbours(this.directions,i,j);
                     //Testing parallel stream
-                    curr.getParticles().parallelStream().forEach(particle-> addNeighbours(particle,curr.getParticles(),neighbourCells,this.RC));
+                    Set<Particle> auxSet = new HashSet<>(curr.getParticles());
+                    System.out.println("AUX SET: "+auxSet);
+                    for(Particle particle: curr.getParticles()){
+                        auxSet.remove(particle);
+
+                        addNeighbours(particle,auxSet,neighbourCells,this.RC);
+                    }
+
                 }
             }
         }
@@ -107,23 +114,13 @@ public class Grid {
         return false;
     }
 
-    public void addNeighbours(Particle particle,Set<Particle> currentCellParticles,Map<Cell,List<int[]>> neighbourCells,double RC){
+    public void addNeighbours(Particle particle,Set<Particle> cellParticles,Map<Cell,List<int[]>> neighbourCells,double RC){
 
-
-        Set<Particle> auxSet = new HashSet<>(currentCellParticles);
-        auxSet.remove(particle);
-        Iterator<Particle> currentCellIterator = new HashSet<>(auxSet).iterator();
-
-        while(currentCellIterator.hasNext()){
-            Particle neighbour = currentCellIterator.next();
-            addNeighbour(particle,neighbour,new ArrayList<>(){{add(new int[]{0,0});}},RC);
-            currentCellIterator.remove();
-        }
-
+        cellParticles.forEach(neighbour-> addNeighbour(particle,neighbour,new ArrayList<>(){{add(new int[]{0,0});}},RC));
         for(Map.Entry<Cell,List<int[]>> cell: neighbourCells.entrySet()){
             List<int[]> overflow = cell.getValue();
             //Testing parallel stream
-            cell.getKey().getParticles().parallelStream().forEach(neighbour-> addNeighbour(particle,neighbour,overflow,RC));
+            cell.getKey().getParticles().forEach(neighbour-> addNeighbour(particle,neighbour,overflow,RC));
 
         }
     }
@@ -136,7 +133,6 @@ public class Grid {
                 neighbour.getNeighbours().add(particle);
             }
         }
-
     }
 
     public Map<Cell,List<int[]>> getCellNeighbours(List<int[]> directions,int i, int j){
@@ -159,7 +155,6 @@ public class Grid {
             }else if(dj >= this.M){
                 overflowX = this.L;
             }
-
 
             if(di < 0){
                 overflowY = -this.L;
