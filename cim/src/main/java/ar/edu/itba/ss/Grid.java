@@ -18,7 +18,7 @@ public class Grid {
     private final Cell[][] grid;
     private final List<int[]> directions = new ArrayList<>(){
         {
-            add(new int[]{0, 0});
+           // add(new int[]{0, 0});
             add(new int[]{-1, 0});
             add(new int[]{-1, 1});
             add(new int[]{0, 1});
@@ -41,16 +41,11 @@ public class Grid {
     }
 
     public void completeGrid(List<Particle> particles){
-        for(Particle particle : particles){
+        particles.stream().parallel().forEach(particle ->{
             int gridI =(int) (Math.floor(particle.getPosY()/cellLong));
             int gridJ = (int) (Math.floor(particle.getPosX()/cellLong));
-//            System.out.println("Particle: "+particle);
-//
-//            System.out.println("Grid Pos: "+ gridI + " " + gridJ);
-
             grid[gridI][gridJ].getParticles().add(particle);
-//            System.out.println("Updated Cell: " + grid[gridI][gridJ]);
-        }
+        } );
 
         //particles.forEach(p -> grid[(int) (Math.floor(p.posX/M)-1)][(int) (Math.floor(p.posY/M)-1)].getParticles().add(p));
     }
@@ -75,7 +70,7 @@ public class Grid {
                 if(curr.hasParticles()){
                     Map<Cell,int[]> neighbourCells = getCellNeighbours(i,j);
                     //Testing parallel stream
-                    curr.getParticles().parallelStream().forEach(particle-> addNeighbours(particle,neighbourCells));
+                    curr.getParticles().parallelStream().forEach(particle-> addNeighbours(particle,curr.getParticles(),neighbourCells));
                 }
             }
         }
@@ -102,17 +97,31 @@ public class Grid {
         return dist <= this.RC;
     }
 
-    private void addNeighbours(Particle particle,Map<Cell,int[]> neighbourCells){
+    private void addNeighbours(Particle particle,Set<Particle> currentCellParticles,Map<Cell,int[]> neighbourCells){
+
+
+        Set<Particle> auxSet = new HashSet<>(currentCellParticles);
+        auxSet.remove(particle);
+        Iterator<Particle> currentCellIterator = new HashSet<>(auxSet).iterator();
+
+        while(currentCellIterator.hasNext()){
+            Particle neighbour = currentCellIterator.next();
+            if(isNeighbour(particle,neighbour,new int[]{0,0})){
+                particle.getNeighbours().add(neighbour);
+                neighbour.getNeighbours().add(particle);
+            }
+            currentCellIterator.remove();;
+        }
+
         for(Map.Entry<Cell,int[]> cell: neighbourCells.entrySet()){
             int[] overflow = cell.getValue();
             //Testing parallel stream
-           cell.getKey().getParticles().parallelStream().forEach(neighbour-> {
-                   if(!neighbour.equals(particle)){
+            cell.getKey().getParticles().parallelStream().forEach(neighbour-> {
                        if(isNeighbour(particle,neighbour,overflow)){
                            particle.getNeighbours().add(neighbour);
                            neighbour.getNeighbours().add(particle);
                        }
-                   }
+
                });
 
         }
