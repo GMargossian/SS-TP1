@@ -20,10 +20,24 @@ public class ParticleSimulator {
     }
 
     public void simulate(){
-        System.out.println("Beginning simulation. . .");
+
+            grid.completeGrid(this.particles);
+            grid.updateNeighbours();
+            // grid.printGrid();
+
+
+    }
+
+    public void createResultJSON(){
+        grid.dropDataToJSONFile("data.json");
+        grid.clearGrid();
+    }
+
+    public void loadDynamicData(){
+
 
         if(dynamicData != null){
-            long N = this.particles.size();
+
             int particleId = 0;
 
             while(dynamicData.hasNextLine()){
@@ -37,14 +51,7 @@ public class ParticleSimulator {
                     particle.setVelX(Double.parseDouble(values[2]));
                     particle.setVelY(Double.parseDouble(values[3]));
                     particleId++;
-                    if(particleId == N){
-                        grid.completeGrid(this.particles);
-                        grid.updateNeighbours();
-                       // grid.printGrid();
-                        grid.dropDataToJSONFile("data.json");
-                        grid.clearGrid();
 
-                    }
                 }
                 else{
                     dynamicData.nextLine();
@@ -126,6 +133,7 @@ public class ParticleSimulator {
 
                 try {
                     dynamicData = new Scanner(file).useLocale(Locale.US);
+                    loadDynamicData();
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
                 }

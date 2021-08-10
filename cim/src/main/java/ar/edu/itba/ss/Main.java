@@ -13,8 +13,8 @@ public class Main {
         ParticleSimulator ps = new ParticleSimulator(static_file,dynamic_file);
         long startTime = System.nanoTime();
         ps.simulate();
-
         long endTime = System.nanoTime();
+        ps.createResultJSON();
         long durationMillis = (endTime - startTime)/1000000;
         System.out.println("Time in Milliseconds: " + durationMillis);
 
