@@ -6,10 +6,12 @@ import java.util.stream.Collectors;
 public class Main {
     public static void main(String[] args) {
 
+//        String static_file = "particles_static_data.txt";
+//        String dynamic_file = "particles_dynamic_data.txt";
+        String static_file = "random_particles_static_data.txt";
+        String dynamic_file = "random_particles_dynamic_data.txt";
 
-
-
-        ParticleSimulator ps = new ParticleSimulator("particles_static_data.txt","particles_dynamic_data.txt");
+        ParticleSimulator ps = new ParticleSimulator(static_file,dynamic_file);
         long startTime = System.nanoTime();
         ps.simulate();
 

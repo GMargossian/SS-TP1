@@ -1,6 +1,6 @@
 var particle_list = [];
 var RC;
-
+var M;
 var hasWalls;
 
 var directions = [[1,0],[0,1], [1,1], [-1,0], [0,-1], [-1,-1]];
@@ -86,14 +86,16 @@ function onReaderLoad(event){
     var data = JSON.parse(event.target.result);
     // console.log(data['particles'])
     
-    scale = 70;
+    scale = 50;
      
     canvas.width = data['L']*scale;
     canvas.height = data['L']*scale;
     RC = data['RC'] * scale;
+    M = data['M'];
     hasWalls = data['hasWalls'];
 
     particle_list = [];
+    alwaysDraw();
     data['particles'].forEach((particle) =>{
         // console.log(particle)
         let new_particle = new Particle(particle['id'],particle['posX'] * scale, particle['posY'] * scale, particle['radius'] * scale, particle['neighbours'], "green");
@@ -101,7 +103,6 @@ function onReaderLoad(event){
         new_particle.draw(context, canvas.width);
         particle_list.push(new_particle);
     })
-    drawWindowBorders();
 }
 
 function resetParticleColor(){
@@ -120,19 +121,44 @@ function getClickedParticle(x,y){
     }
     return null;
 }
+function alwaysDraw(){
+    // drawWindowBorders();
+    drawGrid();
+}
 
-function drawWindowBorders(){
-    context.beginPath();
-    context.moveTo(0, 0);
-    context.lineTo(canvas.width, 0);
-    context.moveTo(canvas.width, 0);
-    context.lineTo(canvas.width, canvas.height);    
-    context.moveTo(canvas.width, canvas.height);
-    context.lineTo(0, canvas.height);    
-    context.moveTo(0, canvas.height);
-    context.lineTo(0, 0);
-    context.stroke();
-    context.closePath();
+// function drawWindowBorders(){
+//     context.beginPath();
+//     context.moveTo(0, 0);
+//     context.lineTo(canvas.width, 0);
+//     context.moveTo(canvas.width, 0);
+//     context.lineTo(canvas.width, canvas.height);    
+//     context.moveTo(canvas.width, canvas.height);
+//     context.lineTo(0, canvas.height);    
+//     context.moveTo(0, canvas.height);
+//     context.lineTo(0, 0);
+//     context.stroke();
+//     context.closePath();
+// }
+
+function drawGrid(){
+
+    for(var i = 0 ; i <= canvas.width ; i+= Math.floor(canvas.width/this.M)){
+        console.log(i);
+        context.beginPath();
+        context.moveTo(0,i);
+        context.lineTo(canvas.height,i);
+        context.stroke();
+        context.closePath();
+    }
+    for(var i = 0 ; i <= canvas.height ; i+= Math.floor(canvas.height/this.M)){
+        context.beginPath();
+        context.moveTo(i,0);
+        context.lineTo(i,canvas.width);
+        context.stroke();
+        context.closePath();
+    }
+    // context.stroke();
+    // context.closePath();
 }
 
 
@@ -167,7 +193,7 @@ canvas.addEventListener('click', (event) =>{
                 }
             }
 
-            drawWindowBorders();
+            alwaysDraw();
             particle_list.forEach(p => p.draw(context, canvas.width));
         }
     }

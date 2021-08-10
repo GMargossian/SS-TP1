@@ -84,9 +84,9 @@ public class Particle{
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder("Particle:" + id + "{" +
+        StringBuilder sb = new StringBuilder("Particle: " + id + "{" +
                 "posX=" + posX +
-                ", posY=" + posY+", neighbours= [");
+                ", posY=" + posY+", radius= "+radius+", neighbours= [");
         for(Particle particle: neighbours){
             sb.append("Particle").append(particle.id).append("{ posX= ").append(particle.getPosX()).append(", posY= ").append(particle.posY).append("}, ");
         }

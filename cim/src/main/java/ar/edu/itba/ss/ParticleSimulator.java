@@ -45,8 +45,10 @@ public class ParticleSimulator {
                         grid.clearGrid();
 
                     }
-                }else{
-                    System.out.println(dynamicData.nextLine()+" - Particles: "+particles);
+                }
+                else{
+                    dynamicData.nextLine();
+//                    System.out.println(+" - Particles: "+particles);
                 }
             }
         }else{
@@ -149,7 +151,7 @@ public class ParticleSimulator {
 
             }
             System.out.println("Loaded "+line+" particles.");
-            System.out.println("Particles: "+particles);
+           // System.out.println("Particles: "+particles);
         }else{
             throw new IllegalArgumentException("Scanner can't be null");
         }

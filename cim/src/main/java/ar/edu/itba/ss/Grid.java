@@ -18,7 +18,7 @@ public class Grid {
     private final Cell[][] grid;
     private final List<int[]> directions = new ArrayList<>(){
         {
-           // add(new int[]{0, 0});
+            //add(new int[]{0, 0});
             add(new int[]{-1, 0});
             add(new int[]{-1, 1});
             add(new int[]{0, 1});
@@ -50,6 +50,11 @@ public class Grid {
         //particles.forEach(p -> grid[(int) (Math.floor(p.posX/M)-1)][(int) (Math.floor(p.posY/M)-1)].getParticles().add(p));
     }
 
+    public Cell getCellFromGrid(int i, int j){
+        return grid[i][j];
+    }
+
+
     public void clearGrid(){
 //        Arrays.stream(grid).parallel().forEach(cells -> {
 //            for(int i = 0 ; i< M;i++){
@@ -68,7 +73,7 @@ public class Grid {
             for(int j = 0; j < M; j++){
                 Cell curr = this.grid[i][j];
                 if(curr.hasParticles()){
-                    Map<Cell,int[]> neighbourCells = getCellNeighbours(i,j);
+                    Map<Cell,List<int[]>> neighbourCells = getCellNeighbours(this.directions,i,j);
                     //Testing parallel stream
                     curr.getParticles().parallelStream().forEach(particle-> addNeighbours(particle,curr.getParticles(),neighbourCells,this.RC));
                 }
@@ -92,12 +97,17 @@ public class Grid {
         }
     }
 
-    private boolean isNeighbour(Particle p1, Particle p2, int[] overflow,double RC){
-        double dist = Math.sqrt(Math.pow((p1.getPosX() - (p2.getPosX() + overflow[0])),2) + Math.pow((p1.getPosY() - (p2.getPosY() + overflow[1])),2)) - p1.getRadius() - p2.getRadius();
-        return dist <= RC;
+    private boolean isNeighbour(Particle p1, Particle p2, List<int[]> overflows,double RC){
+        for(int[] overflow: overflows){
+            double dist = Math.sqrt(Math.pow((p1.getPosX() - (p2.getPosX() + overflow[0])),2) + Math.pow((p1.getPosY() - (p2.getPosY() + overflow[1])),2)) - p1.getRadius() - p2.getRadius();
+            if(dist <= RC){
+                return true;
+            }
+        }
+        return false;
     }
 
-    private void addNeighbours(Particle particle,Set<Particle> currentCellParticles,Map<Cell,int[]> neighbourCells,double RC){
+    public void addNeighbours(Particle particle,Set<Particle> currentCellParticles,Map<Cell,List<int[]>> neighbourCells,double RC){
 
 
         Set<Particle> auxSet = new HashSet<>(currentCellParticles);
@@ -106,30 +116,33 @@ public class Grid {
 
         while(currentCellIterator.hasNext()){
             Particle neighbour = currentCellIterator.next();
-            addNeighbour(particle,neighbour,new int[]{0,0},RC);
-            currentCellIterator.remove();;
+            addNeighbour(particle,neighbour,new ArrayList<>(){{add(new int[]{0,0});}},RC);
+            currentCellIterator.remove();
         }
 
-        for(Map.Entry<Cell,int[]> cell: neighbourCells.entrySet()){
-            int[] overflow = cell.getValue();
+        for(Map.Entry<Cell,List<int[]>> cell: neighbourCells.entrySet()){
+            List<int[]> overflow = cell.getValue();
             //Testing parallel stream
-            cell.getKey().getParticles().parallelStream().forEach(neighbour-> {addNeighbour(particle,neighbour,overflow,this.RC);});
+            cell.getKey().getParticles().parallelStream().forEach(neighbour-> addNeighbour(particle,neighbour,overflow,RC));
 
         }
     }
 
 
-    private void addNeighbour(Particle particle, Particle neighbour,int[] overflow,double RC){
-        if(isNeighbour(particle,neighbour,overflow,RC)){
-            particle.getNeighbours().add(neighbour);
-            neighbour.getNeighbours().add(particle);
+    private void addNeighbour(Particle particle, Particle neighbour,List<int[]> overflows,double RC){
+        if(!particle.equals(neighbour)){
+            if(isNeighbour(particle,neighbour,overflows,RC)){
+                particle.getNeighbours().add(neighbour);
+                neighbour.getNeighbours().add(particle);
+            }
         }
+
     }
 
-    public Map<Cell,int[]> getCellNeighbours(int i, int j){
+    public Map<Cell,List<int[]>> getCellNeighbours(List<int[]> directions,int i, int j){
         // Cell --> {0,-L}
 
-        Map<Cell, int[]> cells = new HashMap<>();
+        Map<Cell, List<int[]>> cells = new HashMap<>();
 
         for (int[] dir : directions){
             int overflowX = 0;
@@ -156,8 +169,16 @@ public class Grid {
 
             int realJ = (dj + M) % this.M;
             int realI = (di + M) % this.M;
-//            System.out.println("Neigbour cell["+realI+"]["+realJ+"] OVERFLOW = {"+overflowX+", "+overflowY+"}");
-            cells.put(this.grid[realI][realJ] , new int[]{overflowX,overflowY});
+//          System.out.println("Neigbour cell["+realI+"]["+realJ+"] OVERFLOW = {"+overflowX+", "+overflowY+"}");
+            Cell currentCell = this.grid[realI][realJ];
+            if(cells.containsKey(currentCell)) {
+                cells.get(currentCell).add(new int[]{overflowX,overflowY});
+            }
+            else{
+                List<int[]> overflows = new ArrayList<>();
+                overflows.add(new int[]{overflowX,overflowY});
+                cells.put(currentCell,overflows);
+            }
         }
 
         return cells;
