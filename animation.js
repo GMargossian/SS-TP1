@@ -30,7 +30,7 @@ class Particle{
         context.fillText(this.id,this.x,this.y);
         context.closePath();
 
-        if(!this.hasWalls){
+        if(!hasWalls){
 
             
             for (const direc of directions) {
