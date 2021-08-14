@@ -13,6 +13,7 @@ class Particle{
         this.radius = radius;
         this.neighbours = neighbours;
         this.color = color;
+        this.showId = false;
     }
 
     draw(context, L){
@@ -23,11 +24,13 @@ class Particle{
         context.fillStyle = this.color;
         context.fill();
         context.stroke();
-        context.font = "15px Arial";
-        context.fillStyle = "white"
-        context.textAlign = "center";
-        context.textBaseline = "middle";
-        context.fillText(this.id,this.x,this.y);
+        if(this.showId){
+            context.font = "15px Arial";
+            context.fillStyle = "white"
+            context.textAlign = "center";
+            context.textBaseline = "middle";
+            context.fillText(this.id,this.x,this.y);
+        }
         context.closePath();
 
         if(!hasWalls){
@@ -41,11 +44,13 @@ class Particle{
                 context.fillStyle = this.color;
                 context.fill();
                 context.stroke();
-                context.font = "15px Arial";
-                context.fillStyle = "white"
-                context.textAlign = "center";
-                context.textBaseline = "middle";
-                context.fillText(this.id,this.x + direc[0] * L, this.y + direc[1] * L);
+                if(this.showId){
+                    context.font = "15px Arial";
+                    context.fillStyle = "white"
+                    context.textAlign = "center";
+                    context.textBaseline = "middle";
+                    context.fillText(this.id,this.x + direc[0] * L, this.y + direc[1] * L);
+                }
                 context.closePath();
             }
         }
@@ -108,6 +113,7 @@ function onReaderLoad(event){
 function resetParticleColor(){
     particle_list.forEach((p)=>{
         p.color = "green";
+        p.showId = false;
     })
 }
 
@@ -122,23 +128,10 @@ function getClickedParticle(x,y){
     return null;
 }
 function alwaysDraw(){
-    // drawWindowBorders();
     drawGrid();
 }
 
-// function drawWindowBorders(){
-//     context.beginPath();
-//     context.moveTo(0, 0);
-//     context.lineTo(canvas.width, 0);
-//     context.moveTo(canvas.width, 0);
-//     context.lineTo(canvas.width, canvas.height);    
-//     context.moveTo(canvas.width, canvas.height);
-//     context.lineTo(0, canvas.height);    
-//     context.moveTo(0, canvas.height);
-//     context.lineTo(0, 0);
-//     context.stroke();
-//     context.closePath();
-// }
+
 
 function drawGrid(){
 
@@ -174,9 +167,13 @@ canvas.addEventListener('click', (event) =>{
             // console.log("particle clicked: " + clicked.id);
             resetParticleColor();
             clicked.color = "red";
+            clicked.showId = true;
 
             const neighbours = particle_list.filter(p => clicked.neighbours.includes(p.id))
-            neighbours.forEach(n=> n.color = "pink");
+            neighbours.forEach(n=> {
+                n.color = "pink";
+                n.showId = true;
+            });
             context.clearRect(0, 0, canvas.width, canvas.height);
             
             context.beginPath();
