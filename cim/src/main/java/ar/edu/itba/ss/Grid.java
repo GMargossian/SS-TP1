@@ -3,6 +3,7 @@ package ar.edu.itba.ss;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.*;
@@ -10,12 +11,14 @@ import java.util.*;
 
 public class Grid {
 
+    private static final String RESULTS_DIRECTORY = "results/";
     final private int L;
     final private int M;
     final private double RC;
     final private double cellLong;
     final private boolean hasWalls;
     private final Cell[][] grid;
+    private boolean useBF = false;
 //    private List<Particle> particleList;
 
     private final List<int[]> directions = new ArrayList<>(){
@@ -34,6 +37,21 @@ public class Grid {
         this.RC = RC;
         this.hasWalls = hasWalls;
         this.cellLong = (double)L / M; // Tiene que ser entero?
+        this.grid = new Cell[M][M];
+        for(int i = 0; i < M; i++){
+            for(int j = 0; j < M; j++){
+                this.grid[i][j] = new Cell();
+            }
+        }
+    }
+
+    Grid(int L, int M,double RC,boolean hasWalls, boolean useBF){
+        this.L = L;
+        this.M = M;
+        this.RC = RC;
+        this.hasWalls = hasWalls;
+        this.cellLong = (double)L / M; // Tiene que ser entero?
+        this.useBF = useBF;
         this.grid = new Cell[M][M];
         for(int i = 0; i < M; i++){
             for(int j = 0; j < M; j++){
@@ -82,24 +100,33 @@ public class Grid {
 ////            }
 //
 //        });
-        for(int i = 0; i < M; i++){
-            for(int j = 0; j < M; j++){
-                Cell curr = this.grid[i][j];
-                if(curr.hasParticles()){
-                    Map<Cell,List<int[]>> neighbourCells = getCellNeighbours(this.directions,i,j);
-                    //Testing parallel stream
-                    Set<Particle> auxSet = new HashSet<>(curr.getParticles());
-                    for(Particle particle: curr.getParticles()){
-                        auxSet.remove(particle);
+        if(!useBF){
+            for(int i = 0; i < M; i++){
+                for(int j = 0; j < M; j++){
+                    Cell curr = this.grid[i][j];
+                    if(curr.hasParticles()){
+                        Map<Cell,List<int[]>> neighbourCells = getCellNeighbours(this.directions,i,j);
+                        Set<Particle> auxSet = new HashSet<>(curr.getParticles());
+                        for(Particle particle: curr.getParticles()){
+                            auxSet.remove(particle);
 
-                        addNeighbours(particle,auxSet,neighbourCells,this.RC);
+                            addNeighbours(particle,auxSet,neighbourCells,this.RC);
+                        }
                     }
-
-                    // curr.getParticles().parallelStream().forEach(particle-> addNeighbours(particle,curr.getParticles(),neighbourCells,this.RC));
-//                    curr.getParticles().parallelStream().forEach(this::bruteForceNeighbours);
                 }
             }
         }
+        else{
+            for(int i = 0; i < M; i++){
+                for(int j = 0; j < M; j++){
+                    Cell curr = this.grid[i][j];
+                    if(curr.hasParticles()){
+                        curr.getParticles().forEach(this::bruteForceNeighbours);
+                    }
+                }
+            }
+        }
+
     }
 
     public void bruteForceNeighbours(Particle p){
@@ -215,6 +242,13 @@ public class Grid {
 
 
     public void dropDataToJSONFile(String jsonpath){
+        File directory = new File(RESULTS_DIRECTORY);
+        if (!directory.exists()){
+            if(!directory.mkdir()){
+                System.out.println("Couldn't create directory results, exiting...");
+                System.exit(-1);
+            }
+        }
         Gson gson = new GsonBuilder().registerTypeAdapter(Particle.class, new ParticleSerializer()).create();
         StringBuilder sb = new StringBuilder("{");
         sb.append("\"L\":").append(this.L).append(",\n");
@@ -235,7 +269,7 @@ public class Grid {
         sb.append("]}");
 
         try {
-            FileWriter fw = new FileWriter(jsonpath);
+            FileWriter fw = new FileWriter(RESULTS_DIRECTORY + jsonpath);
             fw.write(sb.toString());
             fw.close();
         } catch (IOException e) {
