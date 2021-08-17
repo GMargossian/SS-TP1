@@ -1,24 +1,35 @@
 import matplotlib.pyplot as plt
 import json 
+import os
 
-with open("data.json",'r') as file:
-    data = json.load(file)
-    particles: list = data["particles"]
-    particle_ids: list = list(map(lambda p: p['id'], particles))
-    print(particles)
-    user_inp: str = input(f"Choose particle from: {particle_ids}\n")
-    try:
-        chosen_id: int = int(user_inp)
-    except ValueError:
-        print(f"invalid input, input must be a number from: {particle_ids}")
-        exit(-1)
-    if(chosen_id not in particle_ids):
-        print(f"invalid input, input must be a number from: {particle_ids}")
-        exit(-1)
-    chosen = list(filter(lambda p: p['id'] == chosen_id,particles))[0]
-    neighbours = list(filter(lambda p: p['id'] in chosen['neighbours'],particles))
-    x_values = list(map(lambda p: p['posX'], particles))
-    y_values = list(map(lambda p: p['posY'], particles))
-    plt.scatter(x=x_values,y=y_values)
-    plt.grid()
-    plt.show()
+BENCHMARK_RESULTS_PATH: str = "cim/results/benchmark_results.json"
+if os.path.exists(BENCHMARK_RESULTS_PATH) and os.access(BENCHMARK_RESULTS_PATH, os.R_OK):
+    with open(BENCHMARK_RESULTS_PATH,'r') as file:
+        data = json.load(file)
+        best_m_results: list = data["best_m_results"]
+        M_values = list(map(lambda arr: arr[0], best_m_results))
+        M_value_time = list(map(lambda arr: arr[1], best_m_results))
+
+
+        comparison_results: list = data["comparison_results"]
+        N_values = list(map(lambda arr: arr[0], comparison_results))
+        CIM_N_time = list(map(lambda arr: arr[1], comparison_results))
+        BF_N_time = list(map(lambda arr: arr[2], comparison_results))
+
+        plt.plot(M_values,M_value_time)
+        plt.grid()
+        plt.ylabel('ms')
+        plt.xlabel('M values')
+        plt.show()
+
+        
+        plt.plot(N_values,CIM_N_time, "r",label="CIM")
+        plt.plot(N_values, BF_N_time, "b", label="BF")
+        plt.grid()
+        plt.ylabel('ms')
+        plt.xlabel('N values')
+        plt.legend(loc='upper left')
+        plt.show()
+        
+else:
+    print("Benchmark file not found, exiting...")
