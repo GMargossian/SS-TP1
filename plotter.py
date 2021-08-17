@@ -1,8 +1,14 @@
 import matplotlib.pyplot as plt
 import json 
 import os
+import sys
+print(sys.argv)
 
-BENCHMARK_RESULTS_PATH: str = "cim/results/benchmark_results.json"
+if len(sys.argv) > 1:
+    BENCHMARK_RESULTS_PATH: str = sys.argv[1]
+else:
+    BENCHMARK_RESULTS_PATH: str = "cim/results/benchmark_results.json"
+
 if os.path.exists(BENCHMARK_RESULTS_PATH) and os.access(BENCHMARK_RESULTS_PATH, os.R_OK):
     with open(BENCHMARK_RESULTS_PATH,'r') as file:
         data = json.load(file)
