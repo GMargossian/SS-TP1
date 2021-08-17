@@ -2,7 +2,6 @@ import matplotlib.pyplot as plt
 import json 
 import os
 import sys
-print(sys.argv)
 
 if len(sys.argv) > 1:
     BENCHMARK_RESULTS_PATH: str = sys.argv[1]
